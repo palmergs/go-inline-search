@@ -11,14 +11,14 @@ type TokenMatch struct {
 	category	string
 }
 
-func (match *TokenMatch) IdentEqual(other *TokenMatch) bool {
+func (match *TokenMatch) EqualIdent(other *TokenMatch) bool {
 	if match.ident == nil || other.ident == nil {
 		return false;
 	}
 	return match.ident == other.ident;
 }
 
-func (match *TokenMatch) CategoryEqual(other *TokenMatch) bool {
+func (match *TokenMatch) EqualCategory(other *TokenMatch) bool {
 	if match.category == nil || other.category == nil {
 		return false;
 	}
