@@ -11,7 +11,7 @@ type TokenNode struct {
 }
 
 func (node *TokenNode) Insert(token string, index int, match *TokenMatch) (int, error) {
-	if index < len(value) {
+	if index < len(token) {
 		runeValue, width := utf8.DecodeRuneInString(token[index:])
 		if width > 0 {
 			nextNode, err := node.buildOrCreateChild(runeValue)
@@ -28,24 +28,21 @@ func (node *TokenNode) Insert(token string, index int, match *TokenMatch) (int, 
 }
 
 func (node *TokenNode) buildOrCreateChild(key rune) (*TokenNode, error) {
-	if key == nil {
-		return nil, errors.New("No rune given to create new key.")
-	}
 
-	nextNode = node.nextLetters[key]
+	nextNode := node.nextLetters[key]
 	if nextNode == nil {
 		nextNode = new(TokenNode)
 		nextNode.nextLetters = make(map[rune]*TokenNode)
-		nextNode.matches = make([]*TokenMatch)
+		nextNode.matches = make([]*TokenMatch, 0)
 		node.nextLetters[key] = nextNode
 	}
 	return nextNode, nil
 }
 
-func (node *TokenNode) Exists(match *TokenMatch) *TokenNode {
-	for(existing := range node.matches) {
+func (node *TokenNode) Exists(match *TokenMatch) *TokenMatch {
+	for _, existing := range node.matches {
 		if existing.EqualIdent(match) {
-			existing.name = match.nam
+			existing.name = match.name
 			existing.category = match.category
 			return existing
 		}
@@ -53,10 +50,10 @@ func (node *TokenNode) Exists(match *TokenMatch) *TokenNode {
 	return nil
 }
 
-func (node *TokenNode) Append(match *TokenNode) {
+func (node *TokenNode) Append(match *TokenMatch) {
 
 	if node.Exists(match) == nil {
-		newMatches := make([]*TokenNode, len(node.matches) + 1)
+		newMatches := make([]*TokenMatch, len(node.matches) + 1)
 		copy(newMatches, node.matches)
 		newMatches[len(node.matches)] = match
 		node.matches = newMatches
@@ -71,7 +68,7 @@ func (node *TokenNode) Find(token string, index int) ([]*TokenMatch, error) {
 			if nextNode == nil {
 				return nil, nil
 			}
-			return nextNode.Include(token, index + width)
+			return nextNode.Find(token, index + width)
 		}
 		return nil, errors.New("UTF-8 character was 0")
 	}
