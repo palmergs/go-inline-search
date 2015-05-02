@@ -27,7 +27,7 @@ func (node *TokenNode) Remove(match *TokenMatch) (int, error) {
 
 func (node *TokenNode) Find(token string) ([]*TokenMatch, error) {
 
-	return node.recurseFind(NormalizeKey(token), 0)
+	return node.recurseFind(NormalizeString(token), 0)
 }
 
 func (node *TokenNode) Values() []*TokenMatch {

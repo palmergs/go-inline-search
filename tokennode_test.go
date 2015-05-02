@@ -39,18 +39,34 @@ func TestInsert(t *testing.T) {
 func TestFind(t *testing.T) {
 
 	node := TokenNode{nextLetters: make(map[rune]*TokenNode), matches: make(map[string]*TokenMatch)}
-	match := NewTokenMatch("1234", "encyclopædia", "noun")
+	match := NewTokenMatch("1234", "Ruby on Rails", "noun")
 	match2 := NewTokenMatch("2345", "nicely", "adverb")
 
 	node.Insert(match)
 	node.Insert(match2)
 
-	matches, _ := node.Find("encyclopædia")
+	matches, _ := node.Find("Ruby on Rails")
 	if len(matches) != 1 {
 		t.Errorf("Expected %s length to eq 1", len(matches))
 	}
 	if matches[0] != match {
 		t.Errorf("Expected %s to equal %s", matches[0], match)
+	}
+
+	matchesLower, _ := node.Find("ruby on rails")
+	if len(matchesLower) != 1 {
+		t.Errorf("Expected %s length to eq 1", len(matchesLower))
+	}
+	if matchesLower[0] != match {
+		t.Errorf("Expected %s to equal %s", matchesLower[0], match)
+	}
+
+	matchedDash, _ := node.Find("ruby-on-rails")
+	if len(matchedDash) != 1 {
+		t.Errorf("Expected %s length to eq 1", len(matchedDash))
+	}
+	if matchedDash[0] != match {
+		t.Errorf("Expected %s to equal %s", matchedDash[0], match)
 	}
 
 	matches2, _ := node.Find("nicely")
@@ -61,7 +77,7 @@ func TestFind(t *testing.T) {
 		t.Errorf("Expected %s to equal %s", matches2[0], match2)
 	}
 
-	matches3, _ := node.Find("nonexistant")
+	matches3, _ := node.Find("Ruby")
 	if len(matches3) != 0 {
 		t.Errorf("Expected %s length to eq 0", len(matches3))
 	}
