@@ -30,6 +30,14 @@ func (node *TokenNode) Find(token string) ([]*TokenMatch, error) {
 	return node.recurseFind(NormalizeString(token), 0)
 }
 
+func (node *TokenNode) Next(runeValue rune) *TokenNode {
+	newNode := node.nextLetters[runeValue]
+	if newNode != nil {
+		return newNode
+	}
+	return nil
+}
+
 func (node *TokenNode) Values() []*TokenMatch {
 	arr := make([]*TokenMatch, 0, len(node.matches))
 	for _, value := range node.matches {
@@ -99,7 +107,7 @@ func (node *TokenNode) recurseFind(token string, index int) ([]*TokenMatch, erro
 	if index < len(token) {
 		runeValue, width := utf8.DecodeRuneInString(token[index:])
 		if width > 0 {
-			nextNode := node.nextLetters[runeValue]
+			nextNode := node.Next(runeValue)
 			if nextNode == nil {
 				return nil, nil
 			}

@@ -1,6 +1,9 @@
 package tokensearch
 
-import "testing"
+import (
+	"testing"
+	"unicode/utf8"
+)
 
 func TestNewTokenNode(t *testing.T) {
 
@@ -15,7 +18,7 @@ func TestNewTokenNode(t *testing.T) {
 
 func TestInsert(t *testing.T) {
 
-	node := TokenNode{nextLetters: make(map[rune]*TokenNode), matches: make(map[string]*TokenMatch)}
+	node, _ := NewTokenNode()
 	match := NewTokenMatch("1234", "encyclopædia", "noun")
 
 	node.Insert(match)
@@ -36,9 +39,36 @@ func TestInsert(t *testing.T) {
 	}
 }
 
+func TestNext(t *testing.T) {
+
+	node, _ := NewTokenNode()
+	match1 := NewTokenMatch("1234", "Ruby on Rails", "framework")
+	match2 := NewTokenMatch("2345", "Ruby", "language")
+	match3 := NewTokenMatch("3456", "Ruby Tuesday", "restaurant")
+	match4 := NewTokenMatch("4567", "ruby", "gemstone")
+	node.Insert(match1)
+	node.Insert(match2)
+	node.Insert(match3)
+	node.Insert(match4)
+
+	str := "ruby"
+	for i, w := 0, 0; i < len(str); i += w {
+		runeValue, width := utf8.DecodeRuneInString(str[i:])
+		node = node.Next(runeValue)
+		if node == nil {
+			t.Errorf("expected next %v to be found", runeValue)
+		}
+		w = width
+	}
+
+	if len(node.Values()) != 2 {
+		t.Errorf("expect %v to have 2 matches : %v", node, node.Values())
+	}
+}
+
 func TestFind(t *testing.T) {
 
-	node := TokenNode{nextLetters: make(map[rune]*TokenNode), matches: make(map[string]*TokenMatch)}
+	node, _ := NewTokenNode()
 	match := NewTokenMatch("1234", "Ruby on Rails", "noun")
 	match2 := NewTokenMatch("2345", "nicely", "adverb")
 
@@ -90,7 +120,7 @@ func TestFind(t *testing.T) {
 
 func TestRemove(t *testing.T) {
 
-	node := TokenNode{nextLetters: make(map[rune]*TokenNode), matches: make(map[string]*TokenMatch)}
+	node, _ := NewTokenNode()
 	match := NewTokenMatch("1234", "encyclopædia", "noun")
 	match2 := NewTokenMatch("2345", "nicely", "adverb")
 
