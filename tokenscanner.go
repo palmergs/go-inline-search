@@ -11,7 +11,7 @@ type TokenMatches struct {
 	locations	map[int]int
 }
 
-func MatchesInString(input string) (map[string]*TokenMatches, error) {
+func MatchesInString(root *TokenNode, input string) (map[string]*TokenMatches, error) {
 
 	matches := make(map[string]*TokenMatches)
 
@@ -20,6 +20,7 @@ func MatchesInString(input string) (map[string]*TokenMatches, error) {
 	count := 0
 	for scanner.Scan() {
 		count++
+		fmt.Printf("%v", scanner.Text())
 	}
 	if err := scanner.Err(); err != nil {
 		return matches, err
