@@ -7,25 +7,25 @@ import (
 
 type TokenNode struct {
 	nextLetters		map[rune]*TokenNode
-	matches			map[string]*TokenMatch
+	matches			map[string]*Token
 }
 
 func NewTokenNode() (*TokenNode, error) {
 
-	return &TokenNode{make(map[rune]*TokenNode), make(map[string]*TokenMatch)}, nil
+	return &TokenNode{make(map[rune]*TokenNode), make(map[string]*Token)}, nil
 }
 
-func (node *TokenNode) Insert(match *TokenMatch) (int, error) {
+func (node *TokenNode) Insert(match *Token) (int, error) {
 
 	return node.recurseInsert(match.Key(), 0, match)
 }
 
-func (node *TokenNode) Remove(match *TokenMatch) (int, error) {
+func (node *TokenNode) Remove(match *Token) (int, error) {
 
 	return node.recurseRemove(match.Key(), 0, match)
 }
 
-func (node *TokenNode) Find(token string) ([]*TokenMatch, error) {
+func (node *TokenNode) Find(token string) ([]*Token, error) {
 
 	return node.recurseFind(NormalizeString(token), 0)
 }
@@ -38,15 +38,15 @@ func (node *TokenNode) Next(runeValue rune) *TokenNode {
 	return nil
 }
 
-func (node *TokenNode) Values() []*TokenMatch {
-	arr := make([]*TokenMatch, 0, len(node.matches))
+func (node *TokenNode) Values() []*Token {
+	arr := make([]*Token, 0, len(node.matches))
 	for _, value := range node.matches {
 		arr = append(arr, value)
 	}
 	return arr
 }
 
-func (node *TokenNode) recurseInsert(token string, index int, match *TokenMatch) (int, error) {
+func (node *TokenNode) recurseInsert(token string, index int, match *Token) (int, error) {
 
 	if index < len(token) {
 		runeValue, width := utf8.DecodeRuneInString(token[index:])
@@ -64,7 +64,7 @@ func (node *TokenNode) recurseInsert(token string, index int, match *TokenMatch)
 	return index, nil
 }
 
-func (node *TokenNode) recurseRemove(token string, index int, match *TokenMatch) (int, error) {
+func (node *TokenNode) recurseRemove(token string, index int, match *Token) (int, error) {
 
 	if index < len(token) {
 		runeValue, width := utf8.DecodeRuneInString(token[index:])
@@ -91,18 +91,18 @@ func (node *TokenNode) getOrCreateChild(key rune) (*TokenNode, error) {
 	return nextNode, nil
 }
 
-func (node *TokenNode) appendMatch(match *TokenMatch) {
+func (node *TokenNode) appendMatch(match *Token) {
 
 	if node.matches[match.Ident] == nil {
 		node.matches[match.Ident] = match
 	}
 }
 
-func (node *TokenNode) removeMatch(match *TokenMatch) {
+func (node *TokenNode) removeMatch(match *Token) {
 	delete(node.matches, match.Ident)
 }
 
-func (node *TokenNode) recurseFind(token string, index int) ([]*TokenMatch, error) {
+func (node *TokenNode) recurseFind(token string, index int) ([]*Token, error) {
 
 	if index < len(token) {
 		runeValue, width := utf8.DecodeRuneInString(token[index:])

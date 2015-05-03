@@ -8,7 +8,7 @@ import (
 func TestNewTokenNode(t *testing.T) {
 
 	node, _ := NewTokenNode()
-	match := NewTokenMatch("1234", "encyclopædia", "noun")
+	match := NewToken("1234", "encyclopædia", "noun")
 
 	node.Insert(match)
 	if node.nextLetters['e'] == nil {
@@ -19,7 +19,7 @@ func TestNewTokenNode(t *testing.T) {
 func TestInsert(t *testing.T) {
 
 	node, _ := NewTokenNode()
-	match := NewTokenMatch("1234", "encyclopædia", "noun")
+	match := NewToken("1234", "encyclopædia", "noun")
 
 	node.Insert(match)
 	if node.nextLetters['e'] == nil {
@@ -29,7 +29,7 @@ func TestInsert(t *testing.T) {
 		t.Errorf("Unexpected child node found.")
 	}
 
-	match2 := NewTokenMatch("2345", "nicely", "adverb")
+	match2 := NewToken("2345", "nicely", "adverb")
 	node.Insert(match2)
 	if node.nextLetters['e'] == nil {
 		t.Errorf("Expected a child node with matching rune")
@@ -42,10 +42,10 @@ func TestInsert(t *testing.T) {
 func TestNext(t *testing.T) {
 
 	node, _ := NewTokenNode()
-	match1 := NewTokenMatch("1234", "Ruby on Rails", "framework")
-	match2 := NewTokenMatch("2345", "Ruby", "language")
-	match3 := NewTokenMatch("3456", "Ruby Tuesday", "restaurant")
-	match4 := NewTokenMatch("4567", "ruby", "gemstone")
+	match1 := NewToken("1234", "Ruby on Rails", "framework")
+	match2 := NewToken("2345", "Ruby", "language")
+	match3 := NewToken("3456", "Ruby Tuesday", "restaurant")
+	match4 := NewToken("4567", "ruby", "gemstone")
 	node.Insert(match1)
 	node.Insert(match2)
 	node.Insert(match3)
@@ -69,8 +69,8 @@ func TestNext(t *testing.T) {
 func TestFind(t *testing.T) {
 
 	node, _ := NewTokenNode()
-	match := NewTokenMatch("1234", "Ruby on Rails", "noun")
-	match2 := NewTokenMatch("2345", "nicely", "adverb")
+	match := NewToken("1234", "Ruby on Rails", "noun")
+	match2 := NewToken("2345", "nicely", "adverb")
 
 	node.Insert(match)
 	node.Insert(match2)
@@ -121,8 +121,8 @@ func TestFind(t *testing.T) {
 func TestRemove(t *testing.T) {
 
 	node, _ := NewTokenNode()
-	match := NewTokenMatch("1234", "encyclopædia", "noun")
-	match2 := NewTokenMatch("2345", "nicely", "adverb")
+	match := NewToken("1234", "encyclopædia", "noun")
+	match2 := NewToken("2345", "nicely", "adverb")
 
 	node.Insert(match)
 	node.Insert(match2)

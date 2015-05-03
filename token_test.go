@@ -2,8 +2,8 @@ package tokensearch
 
 import "testing"
 
-func TestNewTokenMatch(t *testing.T) {
-	match := NewTokenMatch("1234", "Ruby on-Rails", "noun")
+func TestNewToken(t *testing.T) {
+	match := NewToken("1234", "Ruby on-Rails", "noun")
 	if match.Key() != "ruby on rails" {
 		t.Errorf("Expected %v be generated from %v", match.Key(), match.Display)
 	}

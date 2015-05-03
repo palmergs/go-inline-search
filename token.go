@@ -4,26 +4,26 @@ import (
 	"unicode"
 )
 
-type TokenMatch struct {
+type Token struct {
 	Ident		string
 	name		string
 	Display		string
 	Category	string
 }
 
-func NewTokenMatch(ident, display, category string) *TokenMatch {
-	return &TokenMatch{ident, NormalizeString(display), display, category}
+func NewToken(ident, display, category string) *Token {
+	return &Token{ident, NormalizeString(display), display, category}
 }
 
-func (match *TokenMatch) EqualIdent(other *TokenMatch) bool {
+func (match *Token) EqualIdent(other *Token) bool {
 	return match.Ident == other.Ident;
 }
 
-func (match *TokenMatch) EqualCategory(other *TokenMatch) bool {
+func (match *Token) EqualCategory(other *Token) bool {
 	return match.Category == other.Category;
 }
 
-func (match *TokenMatch) Key() string {
+func (match *Token) Key() string {
 	return match.name
 }
 
