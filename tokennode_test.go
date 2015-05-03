@@ -7,7 +7,7 @@ import (
 
 func TestNewTokenNode(t *testing.T) {
 
-	node, _ := NewTokenNode()
+	node := NewTokenNode()
 	match := NewToken("1234", "encyclopædia", "noun")
 
 	node.Insert(match)
@@ -18,7 +18,7 @@ func TestNewTokenNode(t *testing.T) {
 
 func TestInsert(t *testing.T) {
 
-	node, _ := NewTokenNode()
+	node := NewTokenNode()
 	match := NewToken("1234", "encyclopædia", "noun")
 
 	node.Insert(match)
@@ -41,7 +41,7 @@ func TestInsert(t *testing.T) {
 
 func TestNext(t *testing.T) {
 
-	node, _ := NewTokenNode()
+	node := NewTokenNode()
 	match1 := NewToken("1234", "Ruby on Rails", "framework")
 	match2 := NewToken("2345", "Ruby", "language")
 	match3 := NewToken("3456", "Ruby Tuesday", "restaurant")
@@ -68,7 +68,7 @@ func TestNext(t *testing.T) {
 
 func TestFind(t *testing.T) {
 
-	node, _ := NewTokenNode()
+	node := NewTokenNode()
 	match := NewToken("1234", "Ruby on Rails", "noun")
 	match2 := NewToken("2345", "nicely", "adverb")
 
@@ -120,7 +120,7 @@ func TestFind(t *testing.T) {
 
 func TestRemove(t *testing.T) {
 
-	node, _ := NewTokenNode()
+	node := NewTokenNode()
 	match := NewToken("1234", "encyclopædia", "noun")
 	match2 := NewToken("2345", "nicely", "adverb")
 

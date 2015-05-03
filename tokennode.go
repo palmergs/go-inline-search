@@ -10,9 +10,9 @@ type TokenNode struct {
 	matches			map[string]*Token
 }
 
-func NewTokenNode() (*TokenNode, error) {
+func NewTokenNode() (*TokenNode) {
 
-	return &TokenNode{make(map[rune]*TokenNode), make(map[string]*Token)}, nil
+	return &TokenNode{make(map[rune]*TokenNode), make(map[string]*Token)}
 }
 
 func (node *TokenNode) Insert(match *Token) (int, error) {
@@ -85,7 +85,7 @@ func (node *TokenNode) getOrCreateChild(key rune) (*TokenNode, error) {
 
 	nextNode := node.nextLetters[key]
 	if nextNode == nil {
-		nextNode, _ = NewTokenNode()
+		nextNode = NewTokenNode()
 		node.nextLetters[key] = nextNode
 	}
 	return nextNode, nil
