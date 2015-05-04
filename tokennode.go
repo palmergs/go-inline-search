@@ -3,7 +3,6 @@ package tokensearch
 import (
 	"unicode/utf8"
 	"errors"
-	"fmt"
 )
 
 type TokenNode struct {
@@ -62,7 +61,6 @@ func (node *TokenNode) recurseInsert(token string, index int, match *Token) (int
 	}
 
 	node.appendMatch(match)
-	fmt.Printf("Setting %s for node with values %s\n", node.matches, node.nextLetters)
 	return index, nil
 }
 

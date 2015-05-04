@@ -2,7 +2,7 @@ package tokensearch
 
 import (
 	"testing"
-	"fmt"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -23,7 +23,6 @@ func TestAdvance(t *testing.T) {
 	allMatches := make([]*Token, 0)
 	onMatch := func(matches []*Token, startPos int, endPos int) {
 		if matches != nil && len(matches) > 0 {
-			fmt.Printf("Found %d matches at position %d ending at %d\n", len(matches), startPos, endPos)
 			allMatches = append(allMatches, matches...)
 		}
 	}
@@ -33,6 +32,9 @@ func TestAdvance(t *testing.T) {
 	document := "Learning ruby or Ruby on Rails, unlike pascal, requires the programmer to learn regular expression."
 	for i, w := 0, 0; i < len(document); i += w {
 		runeValue, width := utf8.DecodeRuneInString(document[i:])
+		if unicode.IsLetter(runeValue) {
+			runeValue = unicode.ToLower(runeValue)
+		}
 		w = width
 
 		if len(inactiveVisitors) > 0 {
@@ -46,7 +48,6 @@ func TestAdvance(t *testing.T) {
 			activeVisitors[i] = NewTokenNodeVisitor(root, i)
 		}
 
-		fmt.Printf("rune %c, %d active visitors, %d inactive visitors\n", runeValue, len(activeVisitors), len(inactiveVisitors))
 		for _, visitor := range activeVisitors {
 			visitor.Advance(runeValue, onMatch)
 			if !visitor.Active() {
@@ -56,5 +57,8 @@ func TestAdvance(t *testing.T) {
 		}
 	}
 
-	fmt.Printf("All matches are %d %s", len(allMatches), allMatches)
+	if len(allMatches) != 4 {
+		t.Errorf("Expected to find 4 matches in document but found %d", len(allMatches))
+	}
+
 }

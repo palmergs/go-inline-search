@@ -1,9 +1,5 @@
 package tokensearch
 
-import (
-	"fmt"
-)
-
 type TokenNodeVisitor struct {
 	CurrentNode		*TokenNode
 	LastMatches		[]*Token
@@ -32,7 +28,6 @@ func (visitor *TokenNodeVisitor) Advance(runeValue rune, onMatch func([]*Token, 
 
 		if len(visitor.CurrentNode.Values()) > 0 {
 			visitor.LastMatches = visitor.CurrentNode.Values()
-			fmt.Printf("Looking at %c at %d lastMatches=%s\n", runeValue, visitor.EndPos, visitor.LastMatches)
 		}
 
 		visitor.CurrentNode = visitor.CurrentNode.Next(runeValue)
