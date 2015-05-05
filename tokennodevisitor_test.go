@@ -13,11 +13,26 @@ func TestNewTokenNodeVisitor(t *testing.T) {
 	}
 }
 
-func TestAdvance(t *testing.T) {
+func buildTree() *TokenNode {
 	root := NewTokenNode()
-	for _, str := range []string{"Ruby", "Ruby on Rails", "Pascal", "Regular Expression"} {
+	for _, str := range []string{"Ruby",
+			"Ruby on Rails",
+			"Weasel",
+			"Badger",
+			"red",
+			"rust",
+			"rain",
+			"ruby on airplanes",
+			"Pascal",
+			"Regular Expression"} {
 		root.Insert(NewToken(str, str, "technology"))
 	}
+	return root
+}
+
+func TestAdvance(t *testing.T) {
+
+	root := buildTree()
 
 	allMatches := make([]*Token, 0)
 	onMatch := func(matches []*Token, startPos int, endPos int) {
@@ -27,7 +42,7 @@ func TestAdvance(t *testing.T) {
 	}
 
 	pool := NewTokenNodeVisitorPool(root)
-	document := "Learning ruby or Ruby on Rails, unlike pascal, requires the programmer to learn regular expression."
+	document := "Learning ruby or Ruby on Rails, unlike pascal, requires the programmer to learn rudamentary regular expressions."
 	for i, w := 0, 0; i < len(document); i += w {
 		runeValue, width := utf8.DecodeRuneInString(document[i:])
 		w = width
@@ -38,5 +53,4 @@ func TestAdvance(t *testing.T) {
 	if len(allMatches) != 4 {
 		t.Errorf("Expected to find 4 matches in document but found %d", len(allMatches))
 	}
-
 }
