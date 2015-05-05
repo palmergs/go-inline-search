@@ -2,7 +2,6 @@ package tokensearch
 
 import (
 	"testing"
-	"unicode"
 	"unicode/utf8"
 )
 
@@ -27,34 +26,13 @@ func TestAdvance(t *testing.T) {
 		}
 	}
 
-	activeVisitors := make(map[int]*TokenNodeVisitor)
-	inactiveVisitors := make(map[int]*TokenNodeVisitor)
+	pool := NewTokenNodeVisitorPool(root)
 	document := "Learning ruby or Ruby on Rails, unlike pascal, requires the programmer to learn regular expression."
 	for i, w := 0, 0; i < len(document); i += w {
 		runeValue, width := utf8.DecodeRuneInString(document[i:])
-		if unicode.IsLetter(runeValue) {
-			runeValue = unicode.ToLower(runeValue)
-		}
 		w = width
 
-		if len(inactiveVisitors) > 0 {
-			for key, visitor := range inactiveVisitors {
-				visitor.Reset(root, i)
-				activeVisitors[i] = visitor
-				delete(inactiveVisitors, key)
-				break
-			}
-		} else {
-			activeVisitors[i] = NewTokenNodeVisitor(root, i)
-		}
-
-		for _, visitor := range activeVisitors {
-			visitor.Advance(runeValue, onMatch)
-			if !visitor.Active() {
-				inactiveVisitors[visitor.StartPos] = visitor
-				delete(activeVisitors, visitor.StartPos)
-			}
-		}
+		pool.Advance(runeValue, i, onMatch)
 	}
 
 	if len(allMatches) != 4 {
