@@ -1,3 +1,3 @@
-# go-inline-search
+# Token Search
 
-Scan documents for predefined string tokens.
+Library to build a search tree for efficient retreival of tokens in a document.
