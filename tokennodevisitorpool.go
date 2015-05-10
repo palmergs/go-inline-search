@@ -30,23 +30,11 @@ func (pool *TokenNodeVisitorPool) InitVisitor(position int) {
 	}
 }
 
-func (pool *TokenNodeVisitorPool) NormalizeRune(runeValue rune) rune {
-	if unicode.IsLetter(runeValue) {
-		return unicode.ToLower(runeValue)
-	}
-	return runeValue
-}
-
 func (pool *TokenNodeVisitorPool) ShouldInit(runeValue rune) bool {
-	if unicode.IsDigit(runeValue) || unicode.IsLetter(runeValue) {
-		return true
-	}
-	return false
+	return (unicode.IsDigit(runeValue) || unicode.IsLetter(runeValue))
 }
 
-func (pool *TokenNodeVisitorPool) Advance(runeValue rune, position int, onMatch func([]*Token, int, int)) {
-
-	runeValue = pool.NormalizeRune(runeValue)
+func (pool *TokenNodeVisitorPool) Advance(runeValue rune, position int, onMatch func([]*TokenMatch)) {
 
 	if pool.ShouldInit(runeValue) {
 		pool.InitVisitor(position)
@@ -60,4 +48,3 @@ func (pool *TokenNodeVisitorPool) Advance(runeValue rune, position int, onMatch 
 		}
 	}
 }
-

@@ -1,21 +1,27 @@
 package tokensearch
 
+type TokenMatch struct {
+	Token			*Token
+	StartPos		int
+	EndPos			int
+}
+
 type TokenNodeVisitor struct {
 	CurrentNode		*TokenNode
-	LastMatches		[]*Token
+	LastMatches		[]*TokenMatch
 	StartPos		int
 	EndPos			int
 }
 
 func NewTokenNodeVisitor(node *TokenNode, startAt int) *TokenNodeVisitor {
-	return &TokenNodeVisitor{CurrentNode: node, LastMatches: make([]*Token, 0), StartPos: startAt, EndPos: startAt}
+	return &TokenNodeVisitor{CurrentNode: node, LastMatches: nil, StartPos: startAt, EndPos: startAt}
 }
 
 func (visitor *TokenNodeVisitor) Reset(node *TokenNode, startAt int) *TokenNodeVisitor {
 	visitor.CurrentNode = node
 	visitor.StartPos = startAt
 	visitor.EndPos = startAt
-	visitor.LastMatches = make([]*Token, 0)
+	visitor.LastMatches = nil
 	return visitor
 }
 
@@ -23,11 +29,20 @@ func (visitor *TokenNodeVisitor) Active() bool {
 	return visitor.CurrentNode != nil
 }
 
-func (visitor *TokenNodeVisitor) Advance(runeValue rune, onMatch func([]*Token, int, int)) {
-	if visitor.Active() {
+func (visitor *TokenNodeVisitor) Matches() []*TokenMatch {
+	matches := make([]*TokenMatch, 0)
+	if len(visitor.CurrentNode.Values()) > 0 {
+		for _, token := range visitor.CurrentNode.Values() {
+			matches = append(matches, &TokenMatch{Token: token, StartPos: visitor.StartPos, EndPos: visitor.EndPos})
+		}
+	}
+	return matches
+}
 
-		if len(visitor.CurrentNode.Values()) > 0 {
-			visitor.LastMatches = visitor.CurrentNode.Values()
+func (visitor *TokenNodeVisitor) Advance(runeValue rune, onMatch func([]*TokenMatch)) {
+	if visitor.Active() {
+		if matches := visitor.Matches(); matches != nil {
+			visitor.LastMatches = matches
 		}
 
 		visitor.CurrentNode = visitor.CurrentNode.Next(runeValue)
@@ -35,7 +50,7 @@ func (visitor *TokenNodeVisitor) Advance(runeValue rune, onMatch func([]*Token, 
 
 		if visitor.CurrentNode == nil {
 			if visitor.LastMatches != nil {
-				onMatch(visitor.LastMatches, visitor.StartPos, visitor.EndPos)
+				onMatch(visitor.LastMatches)
 			}
 		}
 	}

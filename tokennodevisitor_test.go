@@ -34,15 +34,17 @@ func TestAdvance(t *testing.T) {
 
 	root := buildTree()
 
-	allMatches := make([]*Token, 0)
-	onMatch := func(matches []*Token, startPos int, endPos int) {
+	allMatches := make([]*TokenMatch, 0)
+	onMatch := func(matches []*TokenMatch) {
 		if matches != nil && len(matches) > 0 {
 			allMatches = append(allMatches, matches...)
 		}
 	}
 
 	pool := NewTokenNodeVisitorPool(root)
-	document := "Learning ruby or Ruby on Rails, unlike pascal, requires the programmer to learn rudamentary regular expressions."
+	document := NormalizeString(`Learning ruby or Ruby on Rails, unlike pascal,
+			requires the programmer to learn rudamentary regular expressions. This is more
+			text that should be ignored. This is a test. This is only a test!?`)
 	for i, w := 0, 0; i < len(document); i += w {
 		runeValue, width := utf8.DecodeRuneInString(document[i:])
 		w = width
@@ -51,6 +53,6 @@ func TestAdvance(t *testing.T) {
 	}
 
 	if len(allMatches) != 4 {
-		t.Errorf("Expected to find 4 matches in document but found %d", len(allMatches))
+		t.Errorf("Expected to find 4 matches in document but found %d :: %s", len(allMatches), allMatches)
 	}
 }
