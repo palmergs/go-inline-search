@@ -2,6 +2,7 @@ package tokensearch
 
 import (
 	"unicode/utf8"
+	"fmt"
 	"errors"
 )
 
@@ -15,14 +16,22 @@ func NewTokenNode() (*TokenNode) {
 	return &TokenNode{make(map[rune]*TokenNode), make(map[string]*Token)}
 }
 
-func (node *TokenNode) Insert(match *Token) (int, error) {
+func (node *TokenNode) Insert(token *Token) (int, error) {
 
-	return node.recurseInsert(match.Key(), 0, match)
+	if key := token.Key(); len(key) > 0 {
+		return node.recurseInsert(token.Key(), 0, token)
+	} else {
+		return 0, errors.New(fmt.Sprintf("Key length was 0 on insert for %s.", token))
+	}
 }
 
-func (node *TokenNode) Remove(match *Token) (int, error) {
+func (node *TokenNode) Remove(token *Token) (int, error) {
 
-	return node.recurseRemove(match.Key(), 0, match)
+	if key := token.Key(); len(key) > 0 {
+		return node.recurseRemove(token.Key(), 0, token)
+	} else {
+		return 0, errors.New(fmt.Sprintf("Key length was 0 on remove for %s.", token))
+	}
 }
 
 func (node *TokenNode) Find(token string) []*Token {
@@ -36,6 +45,7 @@ func (node *TokenNode) Next(runeValue rune) *TokenNode {
 }
 
 func (node *TokenNode) Values() []*Token {
+
 	arr := make([]*Token, 0, len(node.matches))
 	for _, value := range node.matches {
 		arr = append(arr, value)
@@ -44,6 +54,7 @@ func (node *TokenNode) Values() []*Token {
 }
 
 func (node *TokenNode) AllValues(max int) []*Token {
+
 	arr := make([]*Token, 0, len(node.matches))
 	arr = append(arr, node.Values()...)
 	for _, childNode := range node.nextLetters {
@@ -55,38 +66,38 @@ func (node *TokenNode) AllValues(max int) []*Token {
 	return arr
 }
 
-func (node *TokenNode) recurseInsert(token string, index int, match *Token) (int, error) {
+func (node *TokenNode) recurseInsert(key string, index int, token *Token) (int, error) {
 
-	if index < len(token) {
-		runeValue, width := utf8.DecodeRuneInString(token[index:])
+	if index < len(key) {
+		runeValue, width := utf8.DecodeRuneInString(key[index:])
 		if width > 0 {
 			nextNode, err := node.getOrCreateChild(runeValue)
 			if err != nil {
 				return index, errors.New("Unable to find or build node")
 			}
-			return nextNode.recurseInsert(token, index + width, match)
+			return nextNode.recurseInsert(key, index + width, token)
 		}
 		return index, errors.New("UTF-8 character width was 0")
 	}
 
-	node.appendMatch(match)
+	node.appendMatch(token)
 	return index, nil
 }
 
-func (node *TokenNode) recurseRemove(token string, index int, match *Token) (int, error) {
+func (node *TokenNode) recurseRemove(key string, index int, token *Token) (int, error) {
 
-	if index < len(token) {
-		runeValue, width := utf8.DecodeRuneInString(token[index:])
+	if index < len(key) {
+		runeValue, width := utf8.DecodeRuneInString(key[index:])
 		if width > 0 {
 			nextNode := node.nextLetters[runeValue]
 			if nextNode == nil {
 				return index, errors.New("Unable to find node with match")
 			}
-			return nextNode.recurseRemove(token, index + width, match)
+			return nextNode.recurseRemove(key, index + width, token)
 		}
 	}
 
-	node.removeMatch(match)
+	node.removeMatch(token)
 	return index, nil
 }
 
