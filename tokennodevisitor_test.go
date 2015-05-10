@@ -2,6 +2,7 @@ package tokensearch
 
 import (
 	"testing"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -44,10 +45,18 @@ func TestAdvance(t *testing.T) {
 	pool := NewTokenNodeVisitorPool(root)
 	document := NormalizeString(`Learning ruby or Ruby on Rails, unlike pascal,
 			requires the programmer to learn rudamentary regular expressions. This is more
-			text that should be ignored. This is a test. This is only a test!?`)
+			text that should be ignored. This is a test. Testing my brain. This is only a test!?`)
+	currIsChar := false
+	lastWasChar := false
 	for i, w := 0, 0; i < len(document); i += w {
 		runeValue, width := utf8.DecodeRuneInString(document[i:])
 		w = width
+
+		currIsChar = (unicode.IsLetter(runeValue) || unicode.IsDigit(runeValue))
+		if currIsChar && !lastWasChar {
+			pool.InitVisitor(i)
+		}
+		lastWasChar = currIsChar
 
 		pool.Advance(runeValue, i, onMatch)
 	}

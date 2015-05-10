@@ -2,6 +2,7 @@ package tokensearch
 
 import (
 	"unicode"
+	"fmt"
 )
 
 type TokenNodeVisitorPool struct {
@@ -36,10 +37,7 @@ func (pool *TokenNodeVisitorPool) ShouldInit(runeValue rune) bool {
 
 func (pool *TokenNodeVisitorPool) Advance(runeValue rune, position int, onMatch func([]*TokenMatch)) {
 
-	if pool.ShouldInit(runeValue) {
-		pool.InitVisitor(position)
-	}
-
+	fmt.Printf("There are %d visitors for %c\n", len(pool.activeVisitors), runeValue)
 	for _, visitor := range pool.activeVisitors {
 		visitor.Advance(runeValue, onMatch)
 		if !visitor.Active() {

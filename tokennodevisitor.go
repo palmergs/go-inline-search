@@ -36,7 +36,11 @@ func (visitor *TokenNodeVisitor) Matches() []*TokenMatch {
 			matches = append(matches, &TokenMatch{Token: token, StartPos: visitor.StartPos, EndPos: visitor.EndPos})
 		}
 	}
-	return matches
+	if len(matches) > 0 {
+		return matches
+	} else {
+		return nil
+	}
 }
 
 func (visitor *TokenNodeVisitor) Advance(runeValue rune, onMatch func([]*TokenMatch)) {
