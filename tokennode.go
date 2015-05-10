@@ -25,17 +25,14 @@ func (node *TokenNode) Remove(match *Token) (int, error) {
 	return node.recurseRemove(match.Key(), 0, match)
 }
 
-func (node *TokenNode) Find(token string) ([]*Token, error) {
+func (node *TokenNode) Find(token string) []*Token {
 
 	return node.recurseFind(NormalizeString(token), 0)
 }
 
 func (node *TokenNode) Next(runeValue rune) *TokenNode {
-	newNode := node.nextLetters[runeValue]
-	if newNode != nil {
-		return newNode
-	}
-	return nil
+
+	return node.nextLetters[runeValue]
 }
 
 func (node *TokenNode) Values() []*Token {
@@ -114,18 +111,27 @@ func (node *TokenNode) removeMatch(match *Token) {
 	delete(node.matches, match.Ident)
 }
 
-func (node *TokenNode) recurseFind(token string, index int) ([]*Token, error) {
+func (node *TokenNode) recurseFind(token string, index int) []*Token {
 
 	if index < len(token) {
 		runeValue, width := utf8.DecodeRuneInString(token[index:])
 		if width > 0 {
-			nextNode := node.Next(runeValue)
-			if nextNode == nil {
-				return nil, nil
+
+			if nextNode := node.Next(runeValue); nextNode != nil {
+
+				// node found; recusively visit next node with character state and position
+				return nextNode.recurseFind(token, index + width)
+			} else {
+
+				// reached end of search tree; return nil
+				return nil
 			}
-			return nextNode.recurseFind(token, index + width)
 		}
-		return nil, errors.New("UTF-8 character was 0")
+
+		// rune not found; return nil
+		return nil
 	}
-	return node.Values(), nil
+
+	// reached end of search string; return any values found in the current node
+	return node.Values()
 }
