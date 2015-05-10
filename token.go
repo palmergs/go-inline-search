@@ -12,19 +12,26 @@ type Token struct {
 }
 
 func NewToken(ident, display, category string) *Token {
-	return &Token{ident, NormalizeString(display), display, category}
+	token := Token{Ident: ident, Display: display, Category: category}
+	token.InitKey()
+	return &token
 }
 
-func (match *Token) EqualIdent(other *Token) bool {
-	return match.Ident == other.Ident;
+func (token *Token) InitKey() string {
+	token.name = NormalizeString(token.Display)
+	return token.name
 }
 
-func (match *Token) EqualCategory(other *Token) bool {
-	return match.Category == other.Category;
+func (token *Token) EqualIdent(other *Token) bool {
+	return token.Ident == other.Ident;
 }
 
-func (match *Token) Key() string {
-	return match.name
+func (token *Token) EqualCategory(other *Token) bool {
+	return token.Category == other.Category;
+}
+
+func (token *Token) Key() string {
+	return token.name
 }
 
 func NormalizeString(str string) string {
