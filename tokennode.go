@@ -46,6 +46,18 @@ func (node *TokenNode) Values() []*Token {
 	return arr
 }
 
+func (node *TokenNode) AllValues(max int) []*Token {
+	arr := make([]*Token, 0, len(node.matches))
+	arr = append(arr, node.Values()...)
+	for _, childNode := range node.nextLetters {
+		if len(arr) > max {
+			break
+		}
+		arr = append(arr, childNode.AllValues(max)...)
+	}
+	return arr
+}
+
 func (node *TokenNode) recurseInsert(token string, index int, match *Token) (int, error) {
 
 	if index < len(token) {

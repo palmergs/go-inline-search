@@ -142,3 +142,16 @@ func TestRemove(t *testing.T) {
 	}
 }
 
+func TestAllValues(t * testing.T) {
+	node := NewTokenNode()
+	match := NewToken("1234", "encyclopædia", "noun")
+	match2 := NewToken("2345", "nicely", "adverb")
+
+	node.Insert(match)
+	node.Insert(match2)
+
+	matches := node.AllValues(3)
+	if len(matches) != 2 {
+		t.Errorf("Expected there to be 2 matchs but got %v", matches)
+	}
+}
