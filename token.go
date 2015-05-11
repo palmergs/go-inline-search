@@ -5,10 +5,10 @@ import (
 )
 
 type Token struct {
-	Ident		string
+	Ident		string	`json:"id"`
 	name		string
-	Display		string
-	Category	string
+	Display		string	`json:"label"`
+	Category	string	`json:"category"`
 }
 
 func NewToken(ident, display, category string) *Token {
