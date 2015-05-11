@@ -1,9 +1,9 @@
 package tokensearch
 
 type TokenMatch struct {
-	Token			*Token
-	StartPos		int
-	EndPos			int
+	Token			*Token	`json:"token"`
+	StartPos		int		`json:"start_at"`
+	EndPos			int		`json:"end_at"`
 }
 
 type TokenNodeVisitor struct {
