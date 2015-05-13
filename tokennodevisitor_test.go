@@ -2,8 +2,7 @@ package tokensearch
 
 import (
 	"testing"
-	"unicode"
-	"unicode/utf8"
+	"strings"
 )
 
 func TestNewTokenNodeVisitor(t *testing.T) {
@@ -60,30 +59,8 @@ func TestAdvance(t *testing.T) {
 
 func searchDocument(root *TokenNode, doc string, expected int) bool {
 
-	allMatches := make([]*TokenMatch, 0)
-	onMatch := func(matches []*TokenMatch) {
-		if matches != nil && len(matches) > 0 {
-			allMatches = append(allMatches, matches...)
-		}
-	}
-
 	document := NormalizeString(doc)
 	pool := NewTokenNodeVisitorPool(root)
-	currIsChar := false
-	lastWasChar := false
-	for i, w := 0, 0; i < len(document); i += w {
-		runeValue, width := utf8.DecodeRuneInString(document[i:])
-		w = width
-
-		currIsChar = (unicode.IsLetter(runeValue) || unicode.IsDigit(runeValue))
-		if currIsChar && !lastWasChar {
-			pool.InitVisitor(i)
-		}
-		lastWasChar = currIsChar
-
-		pool.Advance(runeValue, i, onMatch)
-	}
-	pool.Advance('\n', 0, onMatch)
-
-	return len(allMatches) == expected
+	pool.AdvanceThrough(strings.NewReader(document))
+	return len(pool.Matches) == expected
 }
