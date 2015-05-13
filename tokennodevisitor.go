@@ -43,19 +43,17 @@ func (visitor *TokenNodeVisitor) Matches() []*TokenMatch {
 	}
 }
 
-func (visitor *TokenNodeVisitor) Advance(runeValue rune, onMatch func([]*TokenMatch)) {
+func (visitor *TokenNodeVisitor) SaveMatches() {
 	if visitor.Active() {
 		if matches := visitor.Matches(); matches != nil {
 			visitor.LastMatches = matches
 		}
+	}
+}
 
+func (visitor *TokenNodeVisitor) Advance(runeValue rune) {
+	if visitor.Active() {
 		visitor.CurrentNode = visitor.CurrentNode.Next(runeValue)
 		visitor.EndPos += 1
-
-		if visitor.CurrentNode == nil {
-			if visitor.LastMatches != nil {
-				onMatch(visitor.LastMatches)
-			}
-		}
 	}
 }

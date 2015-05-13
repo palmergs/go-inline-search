@@ -12,74 +12,59 @@ type TokenNodeVisitorPool struct {
 	root					*TokenNode
 	inactiveVisitors 		map[int]*TokenNodeVisitor
 	activeVisitors			map[int]*TokenNodeVisitor
+	currPos					int
+	lastPos					int
+	currRune				rune
+	lastRune				rune
 	Matches					[]*TokenMatch
 }
 
 func NewTokenNodeVisitorPool(root *TokenNode) *TokenNodeVisitorPool {
 	tnvp := &TokenNodeVisitorPool{root: root,
 			inactiveVisitors: make(map[int]*TokenNodeVisitor),
-			activeVisitors: make(map[int]*TokenNodeVisitor)}
+			activeVisitors: make(map[int]*TokenNodeVisitor),
+			currPos: 0,
+			lastPos: 0,
+			currRune: ' ',
+			lastRune: ' '}
 	return tnvp
 }
 
-func (pool *TokenNodeVisitorPool) InitVisitor(position int) {
+func (pool *TokenNodeVisitorPool) initVisitor() {
 	if len(pool.inactiveVisitors) > 0 {
 		for key, visitor := range pool.inactiveVisitors {
-			visitor.Reset(pool.root, position)
-			pool.activeVisitors[position] = visitor
+			visitor.Reset(pool.root, pool.currPos)
+			pool.activeVisitors[pool.currPos] = visitor
 			delete(pool.inactiveVisitors, key)
 			break
 		}
 	} else {
-		pool.activeVisitors[position] = NewTokenNodeVisitor(pool.root, position)
+		pool.activeVisitors[pool.currPos] = NewTokenNodeVisitor(pool.root, pool.currPos)
 	}
 }
 
-func (pool *TokenNodeVisitorPool) ShouldInit(runeValue rune) bool {
-	return (unicode.IsDigit(runeValue) || unicode.IsLetter(runeValue))
+func (pool *TokenNodeVisitorPool) IsSeparator(ch rune) bool {
+	return unicode.IsSpace(ch) || unicode.IsPunct(ch) || unicode.IsSymbol(ch)
 }
 
 func (pool *TokenNodeVisitorPool) AdvanceThrough(reader RuneReader) {
-	currPos := 0
-	lastPos := 0
-	lastWasChar := false
 	for {
 		ch, n, err := reader.ReadRune()
-		currPos += n
+		// fmt.Printf("%c", ch)
+		pool.currPos += n
 		if n == 0 {
 			if err == nil {
+				// fmt.Printf("#")
 				continue
 			}
 			break
 		}
 
-		nch, currIsChar := NormalizeRune(ch)
-		if currIsChar {
-			pool.advanceWithState(nch, currPos, lastPos, currIsChar, lastWasChar)
-			lastPos = currPos
-		}
-		lastWasChar = currIsChar
+		nch, _ := NormalizeRune(ch)
+		pool.advanceWithState(nch, false)
 	}
-
-	// advance through a final
-	pool.advance('\n', currPos + 1)
-}
-
-func (pool *TokenNodeVisitorPool) advanceWithState(ch rune, currPos, lastPos int, currIsChar, lastWasChar bool) {
-	if currPos > 0 && !lastWasChar {
-
-		// advance for a deferred separator character for existing visitors
-		pool.advance(' ', lastPos)
-	}
-
-	if currPos == 0 || !lastWasChar {
-
-		// visitors begin parsing at beginning of valid strings
-		pool.InitVisitor(currPos)
-	}
-
-	// advance of token character
-	pool.advance(ch, currPos)
+	pool.currPos++
+	pool.advanceWithState(' ', true)
 }
 
 func (pool *TokenNodeVisitorPool) onMatch(matches []*TokenMatch) {
@@ -88,13 +73,40 @@ func (pool *TokenNodeVisitorPool) onMatch(matches []*TokenMatch) {
 	}
 }
 
-func (pool *TokenNodeVisitorPool) advance(runeValue rune, position int) {
+func (pool *TokenNodeVisitorPool) advanceWithState(ch rune, forceMatch bool) {
 
-	for _, visitor := range pool.activeVisitors {
-		visitor.Advance(runeValue, pool.onMatch)
-		if !visitor.Active() {
-			pool.inactiveVisitors[visitor.StartPos] = visitor
-			delete(pool.activeVisitors, visitor.StartPos)
+	pool.currRune = ch
+
+	// 1. if last was a separator and this is not then initialize a visitor
+	if pool.IsSeparator(pool.lastRune) && !pool.IsSeparator(ch) {
+		// fmt.Printf("*")
+		pool.initVisitor()
+	}
+
+	// 2. if this is a separator and last was not then save matches for all active visitors
+	if pool.IsSeparator(ch) && !pool.IsSeparator(pool.lastRune) {
+		// fmt.Printf("+")
+		for _, visitor := range pool.activeVisitors {
+			visitor.SaveMatches()
 		}
 	}
+
+	// 3. advance through active visitors; any that become inactive are checked for matches
+	for _, visitor := range pool.activeVisitors {
+		visitor.Advance(ch)
+		if forceMatch || !visitor.Active() {
+			if visitor.LastMatches != nil {
+				// fmt.Printf("!")
+				pool.onMatch(visitor.LastMatches)
+			}
+			pool.deactivateVisitor(visitor)
+		}
+	}
+	pool.lastRune = ch
+	pool.lastPos = pool.currPos
+}
+
+func (pool *TokenNodeVisitorPool) deactivateVisitor(visitor *TokenNodeVisitor) {
+	pool.inactiveVisitors[visitor.StartPos] = visitor
+	delete(pool.activeVisitors, visitor.StartPos)
 }
