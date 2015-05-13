@@ -1,6 +1,8 @@
 package tokensearch
 
 import (
+	"io/ioutil"
+	"encoding/json"
 	"unicode/utf8"
 	"fmt"
 	"errors"
@@ -23,6 +25,30 @@ func (node *TokenNode) Insert(token *Token) (int, error) {
 	} else {
 		return 0, errors.New(fmt.Sprintf("Key length was 0 on insert for %s.", token))
 	}
+}
+
+func (node *TokenNode) InsertFromFile(pathToFile string) (int, error) {
+
+	body, err := ioutil.ReadFile(pathToFile)
+	if err != nil {
+		return 0, err
+	}
+
+	count := 0
+	var importJson []interface{}
+	json.Unmarshal(body, &importJson)
+
+	for _, mapJson := range importJson {
+		m := mapJson.(map[string]interface{})
+		idStr := fmt.Sprintf("%.f", m["id"].(float64))
+		label := m["label"].(string)
+		category := m["category"].(string)
+		_, err := node.Insert(NewToken(idStr, label, category))
+		if err == nil {
+			count++
+		}
+	}
+	return count, nil
 }
 
 func (node *TokenNode) Remove(token *Token) (int, error) {
