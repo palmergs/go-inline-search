@@ -5,13 +5,13 @@ import (
 )
 
 type Token struct {
-	Ident		string	`json:"id"`
+	Ident		int64	`json:"id"`
 	name		string
 	Display		string	`json:"label"`
 	Category	string	`json:"category"`
 }
 
-func NewToken(ident, display, category string) *Token {
+func NewToken(ident int64, display, category string) *Token {
 	token := Token{Ident: ident, Display: display, Category: category}
 	token.InitKey()
 	return &token

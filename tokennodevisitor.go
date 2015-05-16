@@ -63,7 +63,8 @@ func (visitor *TokenNodeVisitor) Advance(runeValues []rune) {
 		}
 		if !match {
 			visitor.CurrentNode = nil
+		} else {
+			visitor.EndPos += 1
 		}
-		visitor.EndPos += 1
 	}
 }

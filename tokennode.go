@@ -10,12 +10,12 @@ import (
 
 type TokenNode struct {
 	nextLetters		map[rune]*TokenNode
-	matches			map[string]*Token
+	matches			map[int64]*Token
 }
 
 func NewTokenNode() (*TokenNode) {
 
-	return &TokenNode{make(map[rune]*TokenNode), make(map[string]*Token)}
+	return &TokenNode{make(map[rune]*TokenNode), make(map[int64]*Token)}
 }
 
 func (node *TokenNode) Insert(token *Token) (int, error) {
@@ -34,16 +34,16 @@ func (node *TokenNode) InsertFromFile(pathToFile string) (int, error) {
 		return 0, err
 	}
 
-	count := 0
 	var importJson []interface{}
 	json.Unmarshal(body, &importJson)
 
+	count := 0
 	for _, mapJson := range importJson {
 		m := mapJson.(map[string]interface{})
-		idStr := fmt.Sprintf("%.f", m["id"].(float64))
+		ident := m["id"].(float64)
 		label := m["label"].(string)
 		category := m["category"].(string)
-		_, err := node.Insert(NewToken(idStr, label, category))
+		_, err := node.Insert(NewToken(int64(ident), label, category))
 		if err == nil {
 			count++
 		}

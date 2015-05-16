@@ -50,7 +50,6 @@ func (pool *TokenNodeVisitorPool) IsSeparator(ch rune) bool {
 func (pool *TokenNodeVisitorPool) AdvanceThrough(reader RuneReader) {
 	for {
 		ch, n, err := reader.ReadRune()
-		pool.currPos += n
 		if n == 0 {
 			if err == nil {
 				continue
@@ -59,9 +58,11 @@ func (pool *TokenNodeVisitorPool) AdvanceThrough(reader RuneReader) {
 		}
 
 		pool.advanceWithState(ch, false)
+		pool.currPos += n
 	}
-	pool.currPos++
+
 	pool.advanceWithState(' ', true)
+	pool.currPos++
 }
 
 func (pool *TokenNodeVisitorPool) onMatch(matches []*TokenMatch) {

@@ -15,7 +15,7 @@ func TestNewTokenNodeVisitor(t *testing.T) {
 
 func buildTree() *TokenNode {
 	root := NewTokenNode()
-	for _, str := range []string{"Ruby",
+	for idx, str := range []string{"Ruby",
 			"Ruby on Rails",
 			"Weasel",
 			"Badger",
@@ -32,7 +32,7 @@ func buildTree() *TokenNode {
 			"ruby on airplanes",
 			"Pascal",
 			"regex"} {
-		root.Insert(NewToken(str, str, "technology"))
+		root.Insert(NewToken(int64(idx), str, "technology"))
 	}
 	return root
 }
