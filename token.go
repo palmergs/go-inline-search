@@ -70,8 +70,8 @@ func NormalizeRune(rn rune) (rune, bool) {
 			return rn, true
 		}
 
-		// return this rune as a character, but set state so there's no string of
-		return rn, false
+		// return this rune as a character
+		return rn, true
 	}
 
 	// a non-printing character is returned as a space with non-character state set

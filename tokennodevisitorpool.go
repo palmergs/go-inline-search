@@ -50,18 +50,15 @@ func (pool *TokenNodeVisitorPool) IsSeparator(ch rune) bool {
 func (pool *TokenNodeVisitorPool) AdvanceThrough(reader RuneReader) {
 	for {
 		ch, n, err := reader.ReadRune()
-		// fmt.Printf("%c", ch)
 		pool.currPos += n
 		if n == 0 {
 			if err == nil {
-				// fmt.Printf("#")
 				continue
 			}
 			break
 		}
 
-		nch, _ := NormalizeRune(ch)
-		pool.advanceWithState(nch, false)
+		pool.advanceWithState(ch, false)
 	}
 	pool.currPos++
 	pool.advanceWithState(' ', true)
@@ -76,27 +73,26 @@ func (pool *TokenNodeVisitorPool) onMatch(matches []*TokenMatch) {
 func (pool *TokenNodeVisitorPool) advanceWithState(ch rune, forceMatch bool) {
 
 	pool.currRune = ch
+	nch, _ := NormalizeRune(ch)
 
-	// 1. if last was a separator and this is not then initialize a visitor
-	if pool.IsSeparator(pool.lastRune) && !pool.IsSeparator(ch) {
-		// fmt.Printf("*")
+	// 1. if last was a separator and this is not whitespace then initialize a visitor
+	if pool.IsSeparator(pool.lastRune) && !unicode.IsSpace(ch) {
 		pool.initVisitor()
 	}
 
-	// 2. if this is a separator and last was not then save matches for all active visitors
-	if pool.IsSeparator(ch) && !pool.IsSeparator(pool.lastRune) {
-		// fmt.Printf("+")
+	// 2. if this is a separator and last was not whitespace then save matches for all active visitors
+	if pool.IsSeparator(ch) && !unicode.IsSpace(pool.lastRune) {
 		for _, visitor := range pool.activeVisitors {
 			visitor.SaveMatches()
 		}
 	}
 
 	// 3. advance through active visitors; any that become inactive are checked for matches
+	chars := []rune{ch, nch}
 	for _, visitor := range pool.activeVisitors {
-		visitor.Advance(ch)
+		visitor.Advance(chars)
 		if forceMatch || !visitor.Active() {
 			if visitor.LastMatches != nil {
-				// fmt.Printf("!")
 				pool.onMatch(visitor.LastMatches)
 			}
 			pool.deactivateVisitor(visitor)
