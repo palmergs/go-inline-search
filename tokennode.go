@@ -1,19 +1,19 @@
 package tokensearch
 
 import (
-	"io/ioutil"
 	"encoding/json"
-	"unicode/utf8"
-	"fmt"
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"unicode/utf8"
 )
 
 type TokenNode struct {
-	nextLetters		map[rune]*TokenNode
-	matches			map[int64]*Token
+	nextLetters map[rune]*TokenNode
+	matches     map[int64]*Token
 }
 
-func NewTokenNode() (*TokenNode) {
+func NewTokenNode() *TokenNode {
 
 	return &TokenNode{make(map[rune]*TokenNode), make(map[int64]*Token)}
 }
@@ -23,7 +23,7 @@ func (node *TokenNode) Insert(token *Token) (int, error) {
 	if key := token.Key(); len(key) > 0 {
 		return node.recurseInsert(token.Key(), 0, token)
 	} else {
-		return 0, errors.New(fmt.Sprintf("Key length was 0 on insert for %s.", token))
+		return 0, errors.New(fmt.Sprintf("Key length was 0 on insert for %v.", token))
 	}
 }
 
@@ -56,7 +56,7 @@ func (node *TokenNode) Remove(token *Token) (int, error) {
 	if key := token.Key(); len(key) > 0 {
 		return node.recurseRemove(token.Key(), 0, token)
 	} else {
-		return 0, errors.New(fmt.Sprintf("Key length was 0 on remove for %s.", token))
+		return 0, errors.New(fmt.Sprintf("Key length was 0 on remove for %v.", token))
 	}
 }
 
@@ -101,7 +101,7 @@ func (node *TokenNode) recurseInsert(key string, index int, token *Token) (int, 
 			if err != nil {
 				return index, errors.New("Unable to find or build node")
 			}
-			return nextNode.recurseInsert(key, index + width, token)
+			return nextNode.recurseInsert(key, index+width, token)
 		}
 		return index, errors.New("UTF-8 character width was 0")
 	}
@@ -119,7 +119,7 @@ func (node *TokenNode) recurseRemove(key string, index int, token *Token) (int, 
 			if nextNode == nil {
 				return index, errors.New("Unable to find node with match")
 			}
-			return nextNode.recurseRemove(key, index + width, token)
+			return nextNode.recurseRemove(key, index+width, token)
 		}
 	}
 
@@ -157,7 +157,7 @@ func (node *TokenNode) recurseFind(token string, index int) []*Token {
 			if nextNode := node.Next(runeValue); nextNode != nil {
 
 				// node found; recusively visit next node with character state and position
-				return nextNode.recurseFind(token, index + width)
+				return nextNode.recurseFind(token, index+width)
 			} else {
 
 				// reached end of search tree; return nil

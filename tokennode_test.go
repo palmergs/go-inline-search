@@ -77,44 +77,44 @@ func TestFind(t *testing.T) {
 
 	matches := node.Find("Ruby on Rails")
 	if len(matches) != 1 {
-		t.Errorf("Expected %s length to eq 1", len(matches))
+		t.Errorf("Expected %v length to eq 1", len(matches))
 	}
 	if matches[0] != match {
-		t.Errorf("Expected %s to equal %s", matches[0], match)
+		t.Errorf("Expected %v to equal %v", matches[0], match)
 	}
 
 	matchesLower := node.Find("ruby on rails")
 	if len(matchesLower) != 1 {
-		t.Errorf("Expected %s length to eq 1", len(matchesLower))
+		t.Errorf("Expected %v length to eq 1", len(matchesLower))
 	}
 	if matchesLower[0] != match {
-		t.Errorf("Expected %s to equal %s", matchesLower[0], match)
+		t.Errorf("Expected %v to equal %v", matchesLower[0], match)
 	}
 
 	matchedDash := node.Find("ruby-on-rails")
 	if len(matchedDash) != 1 {
-		t.Errorf("Expected %s length to eq 1", len(matchedDash))
+		t.Errorf("Expected %v length to eq 1", len(matchedDash))
 	}
 	if matchedDash[0] != match {
-		t.Errorf("Expected %s to equal %s", matchedDash[0], match)
+		t.Errorf("Expected %v to equal %v", matchedDash[0], match)
 	}
 
 	matches2 := node.Find("nicely")
 	if len(matches2) != 1 {
-		t.Errorf("Expected %s length to eq 1", len(matches))
+		t.Errorf("Expected %v length to eq 1", len(matches))
 	}
 	if matches2[0] != match2 {
-		t.Errorf("Expected %s to equal %s", matches2[0], match2)
+		t.Errorf("Expected %v to equal %v", matches2[0], match2)
 	}
 
 	matches3 := node.Find("Ruby")
 	if len(matches3) != 0 {
-		t.Errorf("Expected %s length to eq 0", len(matches3))
+		t.Errorf("Expected %v length to eq 0", len(matches3))
 	}
 
 	matches4 := node.Find("encyclopædia with trailing words")
 	if len(matches4) != 0 {
-		t.Errorf("Expected %s length to eq 0", len(matches4))
+		t.Errorf("Expected %v length to eq 0", len(matches4))
 	}
 }
 
@@ -129,20 +129,20 @@ func TestRemove(t *testing.T) {
 
 	matches := node.Find("encyclopædia")
 	if len(matches) != 1 {
-		t.Errorf("Expected %s length to eq 1", len(matches))
+		t.Errorf("Expected %v length to eq 1", len(matches))
 	}
 	if matches[0] != match {
-		t.Errorf("Expected %s to equal %s", matches[0], match)
+		t.Errorf("Expected %v to equal %v", matches[0], match)
 	}
 
 	node.Remove(match)
 	matches = node.Find("encyclopædia")
 	if len(matches) != 0 {
-		t.Errorf("Expected %s length to eq 0", len(matches))
+		t.Errorf("Expected %v length to eq 0", len(matches))
 	}
 }
 
-func TestAllValues(t * testing.T) {
+func TestAllValues(t *testing.T) {
 	node := NewTokenNode()
 	match := NewToken(1234, "encyclopædia", "noun")
 	match2 := NewToken(2345, "nicely", "adverb")
