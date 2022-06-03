@@ -1,16 +1,16 @@
 package tokensearch
 
 type TokenMatch struct {
-	Token			*Token	`json:"token"`
-	StartPos		int		`json:"start_at"`
-	EndPos			int		`json:"end_at"`
+	Token    *Token `json:"token"`
+	StartPos int    `json:"start_at"`
+	EndPos   int    `json:"end_at"`
 }
 
 type TokenNodeVisitor struct {
-	CurrentNode		*TokenNode
-	LastMatches		[]*TokenMatch
-	StartPos		int
-	EndPos			int
+	CurrentNode *TokenNode
+	LastMatches []*TokenMatch
+	StartPos    int
+	EndPos      int
 }
 
 func NewTokenNodeVisitor(node *TokenNode, startAt int) *TokenNodeVisitor {
@@ -64,7 +64,7 @@ func (visitor *TokenNodeVisitor) Advance(runeValues []rune) {
 		if !match {
 			visitor.CurrentNode = nil
 		} else {
-			visitor.EndPos += 1
+			visitor.EndPos++
 		}
 	}
 }

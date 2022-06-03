@@ -9,24 +9,24 @@ type RuneReader interface {
 }
 
 type TokenNodeVisitorPool struct {
-	root					*TokenNode
-	inactiveVisitors 		map[int]*TokenNodeVisitor
-	activeVisitors			map[int]*TokenNodeVisitor
-	currPos					int
-	lastPos					int
-	currRune				rune
-	lastRune				rune
-	Matches					[]*TokenMatch
+	root             *TokenNode
+	inactiveVisitors map[int]*TokenNodeVisitor
+	activeVisitors   map[int]*TokenNodeVisitor
+	currPos          int
+	lastPos          int
+	currRune         rune
+	lastRune         rune
+	Matches          []*TokenMatch
 }
 
 func NewTokenNodeVisitorPool(root *TokenNode) *TokenNodeVisitorPool {
 	tnvp := &TokenNodeVisitorPool{root: root,
-			inactiveVisitors: make(map[int]*TokenNodeVisitor),
-			activeVisitors: make(map[int]*TokenNodeVisitor),
-			currPos: 0,
-			lastPos: 0,
-			currRune: ' ',
-			lastRune: ' '}
+		inactiveVisitors: make(map[int]*TokenNodeVisitor),
+		activeVisitors:   make(map[int]*TokenNodeVisitor),
+		currPos:          0,
+		lastPos:          0,
+		currRune:         ' ',
+		lastRune:         ' '}
 	return tnvp
 }
 

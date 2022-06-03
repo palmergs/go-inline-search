@@ -1,8 +1,8 @@
 package tokensearch
 
 import (
-	"testing"
 	"strings"
+	"testing"
 )
 
 func TestNewTokenNodeVisitor(t *testing.T) {
@@ -16,22 +16,22 @@ func TestNewTokenNodeVisitor(t *testing.T) {
 func buildTree() *TokenNode {
 	root := NewTokenNode()
 	for idx, str := range []string{"Ruby",
-			"Ruby on Rails",
-			"Weasel",
-			"Badger",
-			"red",
-			"rust",
-			"A+",
-			"O'Malley",
-			"encyclopædia",
-			"rain",
-			"#hashtag",
-			"@twitter",
-			"123.123.123.123",
-			"bob@example.com",
-			"ruby on airplanes",
-			"Pascal",
-			"regex"} {
+		"Ruby on Rails",
+		"Weasel",
+		"Badger",
+		"red",
+		"rust",
+		"A+",
+		"O'Malley",
+		"encyclopædia",
+		"rain",
+		"#hashtag",
+		"@twitter",
+		"123.123.123.123",
+		"bob@example.com",
+		"ruby on airplanes",
+		"Pascal",
+		"regex"} {
 		root.Insert(NewToken(int64(idx), str, "technology"))
 	}
 	return root

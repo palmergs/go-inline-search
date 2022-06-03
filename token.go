@@ -5,10 +5,10 @@ import (
 )
 
 type Token struct {
-	Ident		int64	`json:"id"`
-	name		string
-	Display		string	`json:"label"`
-	Category	string	`json:"category"`
+	Ident    int64 `json:"id"`
+	name     string
+	Display  string `json:"label"`
+	Category string `json:"category"`
 }
 
 func NewToken(ident int64, display, category string) *Token {
@@ -23,11 +23,11 @@ func (token *Token) InitKey() string {
 }
 
 func (token *Token) EqualIdent(other *Token) bool {
-	return token.Ident == other.Ident;
+	return token.Ident == other.Ident
 }
 
 func (token *Token) EqualCategory(other *Token) bool {
-	return token.Category == other.Category;
+	return token.Category == other.Category
 }
 
 func (token *Token) Key() string {

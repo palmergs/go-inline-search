@@ -22,9 +22,8 @@ func (node *TokenNode) Insert(token *Token) (int, error) {
 
 	if key := token.Key(); len(key) > 0 {
 		return node.recurseInsert(token.Key(), 0, token)
-	} else {
-		return 0, errors.New(fmt.Sprintf("Key length was 0 on insert for %v.", token))
 	}
+	return 0, errors.New(fmt.Sprintf("Key length was 0 on insert for %v.", token))
 }
 
 func (node *TokenNode) InsertFromFile(pathToFile string) (int, error) {
@@ -55,9 +54,8 @@ func (node *TokenNode) Remove(token *Token) (int, error) {
 
 	if key := token.Key(); len(key) > 0 {
 		return node.recurseRemove(token.Key(), 0, token)
-	} else {
-		return 0, errors.New(fmt.Sprintf("Key length was 0 on remove for %v.", token))
 	}
+	return 0, errors.New(fmt.Sprintf("Key length was 0 on remove for %v.", token))
 }
 
 func (node *TokenNode) Find(token string) []*Token {
